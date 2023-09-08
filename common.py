@@ -2,18 +2,26 @@ import requests
 import os
 import json
 
+
 def read_config():
     """
     設定ファイルをよみとる
     現時点では共通のファイル(~/discord/config.json)をよみとるようにしている。
     """
     config_path = "~/discord/config.json"
+    config_etc_path = "~/discord/config.json"
     config_expand_path = os.path.expanduser(config_path)
+    path_list = []
     if os.path.exists(config_expand_path):
         with open(config_expand_path) as f:
             data = json.load(f)
+            print(f"Data from {config_path}")
             return data
-        print(f"Data from {config_path}")
+    elif os.path.exists(config_etc_path):
+        with open(config_etc_path) as f:
+            data = json.load(f)
+            print(f"Data from {config_etc_path}")
+            return data
     else:
         print(f"{config_path}: does not exists")
     return None
