@@ -8,7 +8,7 @@ def parse_rss(url: str, limit = 5) -> str:
     for content in rss['entries'][0:limit]:
         output.append('Title: {}\n \tLink: {}\n'.format(content['title'], content['link']))
 
-    return '\n'.join(output)
+    return output
 
 if __name__ == "__main__":
     user_config = read_config()
@@ -16,6 +16,6 @@ if __name__ == "__main__":
     # 暫定ひとつだけ
     news_url = user_config["news"]["urls"][0]
 
-    content = parse_rss(news_url)
+    content = '\n'.join(parse_rss(news_url))
     post_discord("テクノロジニュース：" + '\n' +  content, webhook_url)
     # print(content)

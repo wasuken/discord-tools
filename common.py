@@ -8,7 +8,7 @@ def read_config():
     設定ファイルをよみとる
     現時点では共通のファイル(~/discord/config.json)をよみとるようにしている。
     """
-    config_path = "~/discord/config.json"
+    config_path = "/etc/discord/config.json"
     config_etc_path = "~/discord/config.json"
     config_expand_path = os.path.expanduser(config_path)
     path_list = []
