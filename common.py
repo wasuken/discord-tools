@@ -2,6 +2,7 @@ import requests
 import os
 import json
 
+LOCK_PATH = '/tmp/openrec.lock'
 
 def read_config():
     """
@@ -31,6 +32,31 @@ def post_discord(message: str, webhook_url: str):
     data = {"content": message}
     res = requests.post(webhook_url, data=data)
     return res
+
+def post_discord_if_not_same(message: str, webhook_url: str):
+    """
+    ロックファイルを作成しつつ、おなじ内容は送信しないようにする
+    ロックファイルのパスはLOCK_PATHにて定義
+    returnはBool値
+    """
+    # 前回の通知内容を読み込み
+    if os.path.exists(LOCK_PATH):
+        with open(LOCK_PATH, "r") as f:
+            last_msg = f.read().strip()
+            if last_msg == message:
+                # なにもしない
+                return False
+            else:
+                post_discord(message, webhook_url)
+                with open(LOCK_PATH, "w") as f:
+                    f.write(message.strip())
+    else:
+        post_discord(message, webhook_url)
+        # 現在の通知内容を保存
+        with open(LOCK_PATH, "w") as f:
+            f.write(message.strip())
+
+    return True
 
 def post_discord_with_file(message: str, webhook_url: str, file_path: str):
     """
