@@ -34,7 +34,11 @@ def post_discord(message: str, webhook_url: str):
     return res
 
 def remove_lockfile():
-    os.remove(LOCK_PATH)
+    """
+    ロックファイルをけす
+    """
+    if os.path.exists(LOCK_PATH):
+        os.remove(LOCK_PATH)
 
 def post_discord_if_not_same(message: str, webhook_url: str):
     """
