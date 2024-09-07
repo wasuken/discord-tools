@@ -33,6 +33,9 @@ def post_discord(message: str, webhook_url: str):
     res = requests.post(webhook_url, data=data)
     return res
 
+def remove_lockfile():
+    os.remove(LOCK_PATH)
+
 def post_discord_if_not_same(message: str, webhook_url: str):
     """
     ロックファイルを作成しつつ、おなじ内容は送信しないようにする
@@ -43,18 +46,14 @@ def post_discord_if_not_same(message: str, webhook_url: str):
     if os.path.exists(LOCK_PATH):
         with open(LOCK_PATH, "r") as f:
             last_msg = f.read().strip()
+            # 同じ内容のメッセージの場合
             if last_msg == message:
                 # なにもしない
                 return False
-            else:
-                post_discord(message, webhook_url)
-                with open(LOCK_PATH, "w") as f:
-                    f.write(message.strip())
-    else:
-        post_discord(message, webhook_url)
-        # 現在の通知内容を保存
-        with open(LOCK_PATH, "w") as f:
-            f.write(message.strip())
+
+    post_discord(message, webhook_url)
+    with open(LOCK_PATH, "w") as f:
+        f.write(message.strip())
 
     return True
 

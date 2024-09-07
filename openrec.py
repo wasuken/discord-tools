@@ -1,6 +1,6 @@
 import requests
 import json
-from common import post_discord_if_not_same, read_config
+from common import post_discord_if_not_same, read_config, remove_lockfile
 
 class LiveInfo(object):
     title = ''
@@ -47,5 +47,6 @@ if __name__ == "__main__":
     content = '\n'.join([x.to_content() for x in info_list])
     if len(content) <= 0:
         print("Not send to discord because content is empty.")
+        remove_lockfile()
         exit()
     post_discord_if_not_same("openrec監視：" + '\n' +  content, webhook_url)
