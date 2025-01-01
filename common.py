@@ -2,8 +2,6 @@ import requests
 import os
 import json
 
-LOCK_PATH = '/tmp/openrec.lock'
-
 def read_config():
     """
     設定ファイルをよみとる
@@ -33,22 +31,22 @@ def post_discord(message: str, webhook_url: str):
     res = requests.post(webhook_url, data=data)
     return res
 
-def remove_lockfile():
+def remove_lockfile(lock_path):
     """
     ロックファイルをけす
     """
-    if os.path.exists(LOCK_PATH):
-        os.remove(LOCK_PATH)
+    if os.path.exists(lock_path):
+        os.remove(lock_path)
 
-def post_discord_if_not_same(message: str, webhook_url: str):
+def post_discord_if_not_same(message: str, webhook_url: str, lock_path: str):
     """
     ロックファイルを作成しつつ、おなじ内容は送信しないようにする
-    ロックファイルのパスはLOCK_PATHにて定義
+    ロックファイルのパスはlock_pathにて定義
     returnはBool値
     """
     # 前回の通知内容を読み込み
-    if os.path.exists(LOCK_PATH):
-        with open(LOCK_PATH, "r") as f:
+    if os.path.exists(lock_path):
+        with open(lock_path, "r") as f:
             last_msg = f.read().strip()
             # 同じ内容のメッセージの場合
             if last_msg == message:
@@ -56,7 +54,7 @@ def post_discord_if_not_same(message: str, webhook_url: str):
                 return False
 
     post_discord(message, webhook_url)
-    with open(LOCK_PATH, "w") as f:
+    with open(lock_path, "w") as f:
         f.write(message.strip())
 
     return True
