@@ -1,6 +1,10 @@
 import requests
 import json
-from common import post_discord_if_not_same, read_config, remove_lockfile
+from common import (
+    post_discord_if_not_same,
+    read_config,
+    remove_lockfile
+)
 
 class LiveInfo(object):
     title = ''
@@ -30,23 +34,26 @@ def liveinfo_list_from_api(url):
 
     return rst
 
-if __name__ == "__main__":
-    rec_config = read_config()
-    webhook_url = rec_config["openrec"]["webhook"]
-    api_endpoint_url = rec_config["openrec"]["api_endpoint"]
-    id_list = rec_config["openrec"]["channel_id_list"]
+def info_list_post_discord(webhook_url, api_endpoint_url, id_list, lock_path):
     list = liveinfo_list_from_api(api_endpoint_url)
     info_list = []
     for info in list:
-        print(info.channel_id)
         for id in id_list:
             if info.channel_id in id:
                 info_list.append(info)
 
 
     content = '\n'.join([x.to_content() for x in info_list])
-    if len(content) <= 0:
-        print("Not send to discord because content is empty.")
-        remove_lockfile()
-        exit()
-    post_discord_if_not_same("openrec監視：" + '\n' +  content, webhook_url)
+    if len(content.strip()) > 0:
+        post_discord_if_not_same("openrec監視：" + '\n' +  content, webhook_url, lock_path)
+    else:
+        # print("Not send to discord because content is empty.")
+        remove_lockfile(lock_path)
+
+
+if __name__ == "__main__":
+    rec_config = read_config()
+    webhook_url = rec_config["openrec"]["webhook"]
+    api_endpoint_url = rec_config["openrec"]["api_endpoint"]
+    id_list = rec_config["openrec"]["channel_id_list"]
+    info_list_post_discord(webhook_url, api_endpoint_url, id_list, '/tmp/openrec.lock')
