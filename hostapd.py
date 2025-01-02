@@ -36,7 +36,7 @@ def parse_clients(clients_str):
 
     return client_details
 
-def send_to_discord(status, clients):
+def send_to_discord(status, clients, webhook_url):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # メッセージの作成
@@ -65,18 +65,17 @@ def send_to_discord(status, clients):
     }
 
     try:
-        response = requests.post(WEBHOOK_URL, json=payload)
+        response = requests.post(webhook_url, json=payload)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Error sending to Discord: {str(e)}")
 
 def main():
+    config = read_config()
+    webhook_url = config['hostapd']['webhook']
     print("Starting Hostapd Discord Monitor...")
-    while True:
-        status, clients = get_hostapd_info()
-        send_to_discord(status, clients)
-        # 5分待機
-        time.sleep(300)
+    status, clients = get_hostapd_info()
+    send_to_discord(status, clients, webhook_url)
 
 if __name__ == "__main__":
     main()
