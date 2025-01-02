@@ -6,9 +6,6 @@ from datetime import datetime
 import re
 from common import post_discord_if_not_same, read_config
 
-# Discord Webhook URL
-WEBHOOK_URL = "YOUR_WEBHOOK_URL_HERE"
-
 def get_hostapd_info():
     try:
         # ステータス取得
