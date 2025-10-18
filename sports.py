@@ -31,7 +31,7 @@ def format_schedule(matches_by_date, start_date, end_date):
     
     # 一週間の日付を列挙
     current_date = start_date.date()
-    for _ in range(7):
+    for _ in range(8):
         jp_weekday = get_japanese_weekday(current_date)
         date_str = current_date.strftime('%Y/%m/%d')
         
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     
     # 日付の計算
     today = datetime.today()
-    week_later = today + timedelta(days=7)
+    week_later = today + timedelta(days=8)
     date_from = today.strftime('%Y-%m-%d')
     date_to = week_later.strftime('%Y-%m-%d')
 
